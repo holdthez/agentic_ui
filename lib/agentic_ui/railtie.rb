@@ -25,7 +25,7 @@ module AgenticUi
   module Helper
     # Revolutionary ux method that returns the AgenticUI Display singleton
     def ux
-      AgenticUi::Display.instance
+      Ui::Display.instance
     end
 
     # Set agent context for current request

@@ -17,6 +17,10 @@ module AgenticUi
       primary_cta_text primary_cta_url secondary_cta_text secondary_cta_url
       min_height text_alignment overlay_opacity duration_ms animate_on_scroll
       faqs plans sections headers gap
+      url href permission icon color size
+      media_url media_alt reverse reversed
+      left right main sidebar sidebar_position
+      tabs events date author published_at body image featured_image
     ].freeze
 
     def initialize(component_type, agent: nil, **args, &block)
@@ -45,6 +49,8 @@ module AgenticUi
         render_link_component(view_context)
       elsif component_type.to_s == 'form'
         render_form_component(view_context)
+      elsif @args[:url].present? || @args[:href].present?
+        render_url_component(view_context)
       else
         render_standard_component(view_context)
       end
@@ -213,6 +219,24 @@ module AgenticUi
           view_context.tag(tag_name, **attributes)
         else
           view_context.content_tag(tag_name, '', **attributes)
+        end
+      end
+    end
+
+    # Render any component with url: or href: as a link (<a> tag)
+    # This enables ux.button(url: '/path') to render as <a href="/path">
+    def render_url_component(view_context)
+      url = @args.delete(:url) || @args.delete(:href)
+      attributes = build_attributes
+
+      if @block
+        view_context.link_to(url, **attributes, &@block)
+      else
+        text_content = @args.delete(:text) || @args.delete('text')
+        if text_content.present?
+          view_context.link_to(text_content, url, **attributes)
+        else
+          view_context.link_to('', url, **attributes)
         end
       end
     end
